@@ -1,7 +1,7 @@
 [project]
 name = "odab-note"
 version = "0.1.0"
-description = "A complex mistake-guard and wrong-answer note (Odab-Note) MCP server for AI Agents"
+description = "Wrong-answer vaccine system for AI agents — learns error patterns and prevents repeated mistakes via MCP"
 authors = [
     { name = "Logan Lee", email = "logan@logans.company" }
 ]
@@ -13,11 +13,12 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 [project.scripts]
-odab = "mcp_mistake_guard.cli:main"
+odab = "odab_note.cli:main"
+odab-note = "odab_note.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_mistake_guard"]
+packages = ["src/odab_note"]

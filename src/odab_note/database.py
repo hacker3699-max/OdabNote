@@ -4,9 +4,9 @@ import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
-DEFAULT_DB_PATH = os.path.expanduser("~/.gemini/antigravity/mistake_guard.db")
+DEFAULT_DB_PATH = os.path.expanduser("~/.gemini/antigravity/odab_note.db")
 
-class MistakeGuardDB:
+class OdabNoteDB:
     def __init__(self, db_path: str = DEFAULT_DB_PATH):
         self.db_path = db_path
         # 디렉토리가 없으면 생성

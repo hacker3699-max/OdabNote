@@ -1,10 +1,10 @@
 from mcp.server.fastmcp import FastMCP
-from mcp_mistake_guard.database import MistakeGuardDB
+from odab_note.database import OdabNoteDB
 import json
 
 # FastMCP 인스턴스 생성
-mcp = FastMCP("MistakeGuard")
-db = MistakeGuardDB()
+mcp = FastMCP("OdabNote")
+db = OdabNoteDB()
 
 @mcp.tool()
 def query_notes(keywords: list[str]) -> str:
@@ -28,13 +28,14 @@ def query_notes(keywords: list[str]) -> str:
     return "\n\n".join(result)
 
 @mcp.tool()
-def record_mistake(keyword: str, error_pattern: str, solution: str) -> str:
+def record_mistake(keyword: str, error_pattern: str, solution: str, target_model: str = "all") -> str:
     """Record a new mistake or error pattern with its correct solution.
 
     Use this tool when a build error occurs, or when you receive negative feedback from the user.
+    target_model can be set to a specific model name (e.g. 'gemini-3.5-flash', 'claude-3.5-sonnet') to track model-specific mistakes.
     """
-    note_id = db.add_mistake(keyword, error_pattern, solution)
-    return f"Successfully recorded mistake (ID: {note_id}). Status is set to Draft. Ask the user or CLI to verify it."
+    note_id = db.add_mistake(keyword, error_pattern, solution, target_model=target_model)
+    return f"Successfully recorded mistake (ID: {note_id}, Model: {target_model}). Status is set to Draft. Ask the user or CLI to verify it."
 
 @mcp.tool()
 def propose_conflict_resolution(note_id_a: int, note_id_b: int, proposed_solution_c: str) -> str:

@@ -1,8 +1,8 @@
 import click
-from mcp_mistake_guard.database import MistakeGuardDB
-from mcp_mistake_guard.server import mcp
+from odab_note.database import OdabNoteDB
+from odab_note.server import mcp
 
-db = MistakeGuardDB()
+db = OdabNoteDB()
 
 @click.group()
 def main():
@@ -90,7 +90,7 @@ def resolve(note_id_a, note_id_b, solution_c):
         click.echo("Error: One or both notes not found.")
         return
 
-    click.echo("\n[MistakeGuard Conflict Alert 🚨]")
+    click.echo("\n[Odab-Note Conflict Alert 🚨]")
     click.echo(f"- Note A (Existing/Failed): [ID: {note_id_a}] Keyword: {note_a['keyword']}")
     click.echo(f"  * Error: {note_a['error_pattern']}")
     click.echo(f"  * Solution: {note_a['solution']}")
@@ -169,8 +169,8 @@ def graph():
 
 @main.command()
 def run_server():
-    """Run the MistakeGuard MCP server."""
-    click.echo("Starting MistakeGuard MCP Server...")
+    """Run the OdabNote MCP server."""
+    click.echo("Starting OdabNote MCP Server...")
     mcp.run()
 
 if __name__ == "__main__":

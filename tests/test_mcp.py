@@ -5,7 +5,7 @@ import sys
 # Inject src directory
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
-from mcp_mistake_guard.server import query_notes, match_error_trace
+from odab_note.server import query_notes, match_error_trace
 
 async def main():
     print("🔍 [TEST 1] Query Notes with keyword 'SMC'...")

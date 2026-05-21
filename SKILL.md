@@ -1,50 +1,61 @@
-# SKILL.md: Mistake-Guard (Odab-Note) Agent Work Instructions
+---
+name: odab-note
+description: Wrong-answer vaccine system for AI agents. Learns error patterns and prevents repeated mistakes.
+---
 
-This document defines how AI coding agents (Claude Code, OpenAI Codex, Cursor, Cline, etc.) should use the **Odab-Note (Mistake-Guard)** system to prevent coding regressions and track verified solutions.
+# OdabNote — Agent Work Instructions
+
+This document defines how AI coding agents (Claude Code, OpenAI Codex, Cursor, Cline, etc.) should use the **OdabNote** system to prevent coding regressions and track verified solutions.
 
 ---
 
-## 1. Role and Core Objectives
-You are an AI agent equipped with the `mistake-guard` MCP server or `odab` CLI. 
-Your goal is to **never repeat the same coding mistakes twice** by querying, matching, and updating the local mistake-guard database.
+## 1. Role and Core Objective
+
+You are an AI agent equipped with the `odab-note` MCP server or `odab` CLI.
+Your goal: **Never repeat the same coding mistake twice.** Achieve this by querying, matching, and updating the local OdabNote database.
 
 ---
 
 ## 2. Agent Workflow (Mandatory Checklist)
 
 ### 🟩 Step 1: Pre-Task Investigation (Before Coding)
-At the very beginning of any coding task, query the database to check if there are past mistakes related to the files, technologies, or keywords you are working on.
-* **MCP Tool:** `query_notes(keywords=["your_technology", "keyword"])`
-* **CLI command fall-back:** `odab list` or `odab show --keyword <name>`
+At the start of any coding task, query the database for past mistakes related to the files, technologies, or keywords you are working on.
+* **MCP Tool:** `query_notes(keywords=["technology", "keyword"])`
+* **CLI fallback:** `odab list`
 
-*Example:* If modifying system metrics or SMC interfaces, check `keywords=["SMC"]` to find timeout behaviors or hardware config errors.
+*Example:* If modifying SMC interfaces, check `keywords=["SMC"]` to find timeout-related errors.
 
-### 🟥 Step 2: Error Analysis & Matching (Upon Compilation/Run Failure)
-If a build, test, or run error occurs, do not immediately make random code changes. First, match the exact error trace against the database to check for a registered vaccine.
-* **MCP Tool:** `match_error_trace(error_trace="paste_entire_stack_trace_here", target_model="claude-3.5-sonnet")`
-* **CLI command fall-back:** Use the traceback text to search the database.
+### 🟥 Step 2: Error Matching (On Compile/Run Failure)
+When a build, test, or runtime error occurs, do NOT immediately make random code changes. First, match the exact error trace against the database.
+* **MCP Tool:** `match_error_trace(error_trace="paste_full_stack_trace", target_model="gemini-3.5-flash")`
+* **Rule:** If a match is found, apply the specified **Correct Solution** immediately.
 
-*Rule:* If a match is found, apply the specified **Correct Solution** immediately.
+### 🟨 Step 3: Record New Mistakes (After Fixing)
+If you solve an error not yet in the database, record it so future runs won't repeat the struggle.
+* **MCP Tool:** `record_mistake(keyword="Error_Name", error_pattern="regex_pattern", solution="exact_fix", target_model="gemini-3.5-flash")`
+* **CLI fallback:** `odab add -k "Name" -e "regex" -f "fix" -m "model"`
 
-### 🟨 Step 3: Recording New Mistakes (Post-Fix Documentation)
-If you solve a new error that was not registered in the database, document it so future agent runs won't repeat the struggle.
-* **MCP Tool:** `record_mistake(keyword="Descriptive_Error_Name", error_pattern="regex_of_error_trace", solution="exact_code_change_needed")`
-* **CLI command fall-back:** `odab add --keyword "Name" --error "Regex" --solution "Steps" --model "your-model"`
-
-*Note:* Newly recorded mistakes are created in `Draft` status. Ask the user or call `odab approve <id>` once the fix is proven correct.
+*Note:* New records start as `Draft`. Call `odab approve <id>` once the fix is proven correct.
 
 ---
 
-## 3. Conflict Handling Guide
-If a new solution contradicts an existing note (e.g. Note A suggests "increase timeout", but Note B suggests "remove timeout entirely"), trigger a conflict resolution flow:
+## 3. Conflict Handling
+
+If a new solution contradicts an existing note (e.g. Note A says "increase timeout", Note B says "remove timeout entirely"):
 * **MCP Tool:** `propose_conflict_resolution(note_id_a=X, note_id_b=Y, proposed_solution_c="merged_solution")`
-* The tool will format a selection block. Present this to the user to choose the correct resolution route.
 
 ---
 
-## 4. Quick CLI Cheatsheet for Agents
-If the MCP server is unavailable, run these shell commands directly:
-* **List all notes:** `odab list`
-* **Graph relations:** `odab graph`
-* **Approve draft:** `odab approve <id>`
-* **Link related notes:** `odab link <id1> <id2> --type conflict`
+## 4. CLI Quick Reference
+
+| Command | Description |
+|---------|-------------|
+| `odab list` | List all notes |
+| `odab show <id>` | View note details |
+| `odab add -k ... -e ... -f ... -m ...` | Add a new note |
+| `odab approve <id>` | Verify a draft note |
+| `odab delete <id>` | Delete a note |
+| `odab graph` | Visualize note relations |
+| `odab link <id1> <id2> -t conflict` | Link two notes |
+| `odab decay -d 30` | Apply time decay (30 days) |
+| `odab resolve <idA> <idB> -c "solution"` | Resolve conflicting notes |
