@@ -4,7 +4,10 @@ import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
-DEFAULT_DB_PATH = os.path.expanduser("~/.gemini/antigravity/odab_note.db")
+DEFAULT_DB_PATH = os.environ.get(
+    "ODAB_DB_PATH",
+    os.path.expanduser("~/.odab_note/odab_note.db")
+)
 
 class OdabNoteDB:
     def __init__(self, db_path: str = DEFAULT_DB_PATH):

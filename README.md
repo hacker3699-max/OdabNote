@@ -242,7 +242,9 @@ odab decay --days 30
 
 ## MCP Server Integration
 
-After `pip install odab-note`, add to your MCP config:
+After `pip install odab-note`, add to your MCP config.
+
+Each agent can have its own separate database using the `ODAB_DB_PATH` environment variable. If not set, defaults to `~/.odab_note/odab_note.db`.
 
 ### For Gemini (Antigravity)
 
@@ -251,7 +253,10 @@ Add to `~/.gemini/antigravity/mcp_config.json`:
 ```json
 {
   "odab-note": {
-    "command": "odab-note"
+    "command": "odab-note",
+    "env": {
+      "ODAB_DB_PATH": "~/.odab_note/gemini.db"
+    }
   }
 }
 ```
@@ -264,11 +269,29 @@ Add to your MCP settings (e.g. `.cursor/mcp.json` or `claude_desktop_config.json
 {
   "mcpServers": {
     "odab-note": {
-      "command": "odab-note"
+      "command": "odab-note",
+      "env": {
+        "ODAB_DB_PATH": "~/.odab_note/claude.db"
+      }
     }
   }
 }
 ```
+
+### For Codex
+
+```json
+{
+  "odab-note": {
+    "command": "odab-note",
+    "env": {
+      "ODAB_DB_PATH": "~/.odab_note/codex.db"
+    }
+  }
+}
+```
+
+> **💡 Shared vs Separate:** Use different `ODAB_DB_PATH` values so each agent builds its own mistake database. Or use the same path if you want all agents to share one notebook.
 
 ### Available MCP Tools
 
@@ -359,9 +382,16 @@ OdabNote/
 
 ## Database Location
 
-The SQLite database is stored at:
+Default:
 ```
-~/.gemini/antigravity/odab_note.db
+~/.odab_note/odab_note.db
+```
+
+Per-agent (set via `ODAB_DB_PATH`):
+```
+~/.odab_note/gemini.db    ← Gemini's mistakes
+~/.odab_note/claude.db    ← Claude's mistakes
+~/.odab_note/codex.db     ← Codex's mistakes
 ```
 
 ---
