@@ -44,7 +44,7 @@ Expected output:
 ```
 Usage: odab [OPTIONS] COMMAND [ARGS]...
 
-  OdabNote CLI - Manage wrong-answer notes (오답노트) for AI Agents.
+  OdabNote CLI - Manage wrong-answer notes for AI Agents.
 
 Commands:
   add         Add a new wrong-answer note manually (auto-verified).
@@ -67,12 +67,12 @@ Commands:
 
 You don't need to type CLI commands. Just talk to your AI agent in natural language.
 
-**Step 1 — Agent makes a mistake. You say: `오답 넣어`**
+**Step 1 — Agent makes a mistake. You say: `오답 넣어` or `odab pull`**
 
 > You asked the agent to modify `config.yaml`, but it created a new `config_new.yaml` instead.
 
 ```
-You:  왜 새로 만들어? 기존 파일 수정하라고 했잖아. 오답 넣어
+You:  Why did you create a new file? I said modify the existing one. odab pull
 
 Agent: ✅ Recorded (ID: 13, Model: claude-opus-4.6)
          Keyword: Created_New_File_Instead_Modifying
@@ -81,10 +81,10 @@ Agent: ✅ Recorded (ID: 13, Model: claude-opus-4.6)
               Never create a new file unless explicitly asked.
 ```
 
-**Step 2 — Not happy with the note? Say: `오답 수정`**
+**Step 2 — Not happy with the note? Say: `오답 수정` or `odab fix`**
 
 ```
-You:  오답 수정 그게 아니라 설정 파일 건드릴 때는 백업부터 하라는 뜻이야
+You:  odab fix I meant you should always back up config files before editing them
 
 Agent: 📝 Revised note (ID: 13)
          Keyword: Config_File_Backup_First
@@ -92,10 +92,10 @@ Agent: 📝 Revised note (ID: 13)
          Fix: Always create a backup copy before modifying any config file
 ```
 
-**Step 3 — Want to remove it entirely? Say: `오답 삭제`**
+**Step 3 — Want to remove it entirely? Say: `오답 삭제` or `odab del`**
 
 ```
-You:  오답 삭제
+You:  odab del
 
 Agent: 🗑️ Deleted note (ID: 13)
          Keyword: Config_File_Backup_First
@@ -104,13 +104,11 @@ Agent: 🗑️ Deleted note (ID: 13)
 
 **That's it.** Three phrases to remember:
 
-| Phrase | What it does |
-|--------|-------------|
-| `오답 넣어` | Record the last mistake |
-| `오답 수정` + feedback | Fix the note |
-| `오답 삭제` | Delete the note |
-
-> English: `odab pull`, `odab fix`, `odab del`
+| Korean | English | What it does |
+|--------|---------|-------------|
+| `오답 넣어` | `odab pull` | Record the last mistake |
+| `오답 수정` | `odab fix` | Revise the note |
+| `오답 삭제` | `odab del` | Delete the note |
 
 ---
 
@@ -145,7 +143,7 @@ odab list
 ID   | Keyword              | Model            | Count | Verified | Error Pattern
 -----------------------------------------------------------------------------------------------
 1    | ZeroDivisionPrev...  | all              | 1     | Yes      | ZeroDivisionError: division by...
-2    | Surface_Only_Fix     | gemini-3.5-flash | 1     | Yes      | 표면만 고치고 내부 코드에...
+2    | Surface_Only_Fix     | gemini-3.5-flash | 1     | Yes      | Fixed surface only, left old refs...
 ```
 
 ### 3. View Details
