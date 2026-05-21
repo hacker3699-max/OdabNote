@@ -17,7 +17,7 @@ In Korea, students keep a notebook called **오답노트** (*odab-note*) — a "
 
 ### The Problem We Lived
 
-We don't just use AI agents — we run an entire engineering organization through them. While building [MacBaram](https://github.com/hacker3699-max/MacBaram), a production app managed entirely by AI agents, we pushed every model to its limits. Claude for architecture reviews. Gemini for deep code audits. Codex for execution. Local models for bulk tasks. Multiple models, multiple projects, hundreds of sessions per week.
+We don't just use AI agents — we work with them every day. While building [MacBaram](https://github.com/hacker3699-max/MacBaram) with the help of AI coding agents, we pushed every model to its limits. Claude for architecture reviews. Gemini for deep code audits. Codex for execution. Local models for bulk tasks. Multiple models, multiple projects, hundreds of sessions per week.
 
 And we watched them all make the **same mistakes**, over and over.
 
