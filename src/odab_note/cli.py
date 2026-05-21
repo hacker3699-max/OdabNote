@@ -59,6 +59,22 @@ def add(keyword, error, fix, model):
     click.echo(f"Successfully added verified note (ID: {note_id}, Model: {model}).")
 
 @main.command()
+@click.argument('mistake')
+@click.argument('fix')
+@click.option('--model', '-m', default='all', help="Which model made this mistake.")
+def pull(mistake, fix, model):
+    """Quick-record: odab pull 'what went wrong' 'what fixed it'"""
+    import re
+    clean = re.sub(r'[^\w\s]', '', mistake)
+    words = [w.capitalize() for w in clean.split() if len(w) > 2][:4]
+    keyword = "_".join(words) if words else "Unknown_Error"
+    note_id = db.add_mistake(keyword, mistake, fix, target_model=model, is_verified=True)
+    click.echo(f"✅ Recorded (ID: {note_id}, Model: {model})")
+    click.echo(f"   Keyword: {keyword}")
+    click.echo(f"   Mistake: {mistake}")
+    click.echo(f"   Fix: {fix}")
+
+@main.command()
 @click.argument('note_id', type=int)
 def approve(note_id):
     """Approve a wrong-answer note (Veto Pass)."""

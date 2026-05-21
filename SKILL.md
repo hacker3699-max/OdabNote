@@ -39,20 +39,45 @@ If you solve an error not yet in the database, record it so future runs won't re
 
 ---
 
-## 3. Conflict Handling
+## 3. Triggers — When to Act Automatically
+
+### On `odab pull` (User-Initiated Quick Record)
+When the user says any of the following:
+- `오답 넣어`
+- `odab pull`
+- `record that mistake`
+
+**You must immediately:**
+1. Analyze the recent conversation to identify what went wrong and what fixed it.
+2. Call `auto_record(what_went_wrong="...", what_fixed_it="...", target_model="your-model-name")`.
+3. Confirm to the user what was recorded.
+
+**The user should NOT need to specify any details.** You already have the context.
+
+### On Command Failure (exit code ≠ 0)
+When any shell command you execute fails:
+1. Capture the stderr/traceback.
+2. Call `match_error_trace(error_trace=stderr_content)` to check for a known fix.
+3. If a match is found, apply the fix immediately.
+4. If no match and you solve it yourself, call `auto_record()` to save it for next time.
+
+---
+
+## 4. Conflict Handling
 
 If a new solution contradicts an existing note (e.g. Note A says "increase timeout", Note B says "remove timeout entirely"):
 * **MCP Tool:** `propose_conflict_resolution(note_id_a=X, note_id_b=Y, proposed_solution_c="merged_solution")`
 
 ---
 
-## 4. CLI Quick Reference
+## 5. CLI Quick Reference
 
 | Command | Description |
 |---------|-------------|
+| `odab pull 'mistake' 'fix'` | **Quick-record** — auto-generates keyword |
 | `odab list` | List all notes |
 | `odab show <id>` | View note details |
-| `odab add -k ... -e ... -f ... -m ...` | Add a new note |
+| `odab add -k ... -e ... -f ... -m ...` | Manual add with full control |
 | `odab approve <id>` | Verify a draft note |
 | `odab delete <id>` | Delete a note |
 | `odab graph` | Visualize note relations |

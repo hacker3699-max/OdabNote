@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 from odab_note.database import OdabNoteDB
 import json
+import re
 
 # FastMCP 인스턴스 생성
 mcp = FastMCP("OdabNote")
@@ -112,6 +113,33 @@ def match_error_trace(error_trace: str, target_model: str = "all", only_verified
             f"   - Correct Solution: {note['solution']}"
         )
     return "\n\n".join(result)
+
+@mcp.tool()
+def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "all") -> str:
+    """Quick-record a mistake from plain language. This is the 'odab pull' trigger.
+
+    When the user says any of: '오답 넣어', 'odab pull', 'record that mistake', or similar:
+    1. Analyze your recent conversation to identify the error and the fix.
+    2. Call this tool with a plain-language description. No regex needed.
+    3. The keyword is auto-generated from the description.
+
+    Args:
+        what_went_wrong: Plain description of the mistake (e.g. 'used LKS venv instead of local venv')
+        what_fixed_it: Plain description of the fix (e.g. 'created dedicated .venv inside project dir')
+        target_model: Which model made this mistake (e.g. 'gemini-3.5-flash', 'claude-3.5-sonnet', 'all')
+    """
+    # Auto-generate keyword from description
+    clean = re.sub(r'[^\w\s]', '', what_went_wrong)
+    words = [w.capitalize() for w in clean.split() if len(w) > 2][:4]
+    keyword = "_".join(words) if words else "Unknown_Error"
+
+    note_id = db.add_mistake(keyword, what_went_wrong, what_fixed_it, target_model=target_model)
+    return (
+        f"✅ Recorded (ID: {note_id}, Model: {target_model})\n"
+        f"   Keyword: {keyword}\n"
+        f"   Mistake: {what_went_wrong}\n"
+        f"   Fix: {what_fixed_it}"
+    )
 
 def run():
     mcp.run()
