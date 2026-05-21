@@ -1,0 +1,1 @@
+# mcp-mistake-guard package
