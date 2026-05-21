@@ -13,7 +13,9 @@ OdabNote is a local MCP (Model Context Protocol) server that captures error patt
 
 In Korea, students keep a notebook called **오답노트** (*odab-note*) — a "wrong-answer notebook." Every time they get a question wrong on an exam, they write it down: what they got wrong, why it was wrong, and the correct answer. Over time, this notebook becomes their most powerful study tool. They stop making the same mistakes.
 
-**We built the same thing for AI agents.**
+**Each student has their own notebook. Not the school's — the student's.**
+
+We applied the same idea to AI models. GPT has its own notebook. Claude has its own. Gemini has its own. Each model is a student — and each one makes different mistakes.
 
 ### The Problem We Lived
 
@@ -37,7 +39,7 @@ The rules grew. The context windows didn't. At 50k tokens, agents start forgetti
 
 The insight was simple: **mistakes are data.** Every time an agent fails and a human corrects it, that's a training signal being thrown away. What if we captured it? What if every mistake became a vaccine — recorded once, effective forever, across every future session?
 
-That's OdabNote. A local MCP server that acts as an **immune system** for AI coding agents. It captures error patterns, stores verified fixes, and automatically matches future errors against its database. Once a mistake is recorded, no agent — on any model, in any session — repeats it.
+That's OdabNote. A local MCP server that gives **each AI model its own wrong-answer notebook**. It captures error patterns, stores verified fixes, and automatically matches future errors against the model's database. Each model sees only its own mistakes — because a student doesn't study from another student's notebook.
 
 ### Beyond Harness Engineering
 
@@ -244,7 +246,7 @@ odab decay --days 30
 
 After `pip install odab-note`, add to your MCP config.
 
-Each agent can have its own separate database using the `ODAB_DB_PATH` environment variable. If not set, defaults to `~/.odab_note/odab_note.db`.
+Each model gets its own notebook — because each model makes different mistakes. Set `ODAB_MODEL` so the server knows which model is running. Each model only sees its own notes.
 
 ### For Gemini (Antigravity)
 
@@ -255,7 +257,7 @@ Add to `~/.gemini/antigravity/mcp_config.json`:
   "odab-note": {
     "command": "odab-note",
     "env": {
-      "ODAB_DB_PATH": "~/.odab_note/gemini.db"
+      "ODAB_MODEL": "gemini-3.5-flash"
     }
   }
 }
@@ -271,7 +273,7 @@ Add to your MCP settings (e.g. `.cursor/mcp.json` or `claude_desktop_config.json
     "odab-note": {
       "command": "odab-note",
       "env": {
-        "ODAB_DB_PATH": "~/.odab_note/claude.db"
+        "ODAB_MODEL": "claude-opus-4"
       }
     }
   }
@@ -285,13 +287,13 @@ Add to your MCP settings (e.g. `.cursor/mcp.json` or `claude_desktop_config.json
   "odab-note": {
     "command": "odab-note",
     "env": {
-      "ODAB_DB_PATH": "~/.odab_note/codex.db"
+      "ODAB_MODEL": "codex"
     }
   }
 }
 ```
 
-> **💡 Shared vs Separate:** Use different `ODAB_DB_PATH` values so each agent builds its own mistake database. Or use the same path if you want all agents to share one notebook.
+> **💡 Each model = each student.** Set `ODAB_MODEL` so each model builds its own wrong-answer notebook. When Claude runs, it only sees Claude's mistakes. When Gemini runs, it only sees Gemini's.
 
 ### Available MCP Tools
 
@@ -382,16 +384,16 @@ OdabNote/
 
 ## Database Location
 
-Default:
+All models share one database file, filtered by `ODAB_MODEL`:
 ```
 ~/.odab_note/odab_note.db
 ```
 
-Per-agent (set via `ODAB_DB_PATH`):
+Each model only sees its own notes:
 ```
-~/.odab_note/gemini.db    ← Gemini's mistakes
-~/.odab_note/claude.db    ← Claude's mistakes
-~/.odab_note/codex.db     ← Codex's mistakes
+gemini-3.5-flash  → sees only gemini-3.5-flash notes
+claude-opus-4     → sees only claude-opus-4 notes
+codex             → sees only codex notes
 ```
 
 ---

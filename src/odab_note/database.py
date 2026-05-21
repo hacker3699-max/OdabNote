@@ -119,13 +119,18 @@ class OdabNoteDB:
 
             return note_id
 
-    def query_notes(self, keywords: List[str], only_verified: bool = False) -> List[Dict[str, Any]]:
+    def query_notes(self, keywords: List[str], only_verified: bool = False, target_model: str = 'all') -> List[Dict[str, Any]]:
         if not keywords:
             return []
         
         # 키워드 매칭 쿼리 (OR 조건)
         query = "SELECT * FROM incorrect_notes WHERE (" + " OR ".join(["keyword LIKE ?" for _ in keywords]) + ")"
         params = [f"%{k}%" for k in keywords]
+        
+        # 모델 필터링: 해당 모델의 노트 + 'all' 태그된 노트만
+        if target_model != 'all':
+            query += " AND (target_model = ? OR target_model = 'all')"
+            params.append(target_model)
         
         if only_verified:
             query += " AND is_verified = 1"

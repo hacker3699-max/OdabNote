@@ -1,23 +1,28 @@
 from mcp.server.fastmcp import FastMCP
 from odab_note.database import OdabNoteDB
 import json
+import os
 import re
 
 # FastMCP 인스턴스 생성
 mcp = FastMCP("OdabNote")
 db = OdabNoteDB()
 
+# 현재 모델 식별 (환경변수로 설정)
+CURRENT_MODEL = os.environ.get("ODAB_MODEL", "all")
+
 @mcp.tool()
 def query_notes(keywords: list[str]) -> str:
     """Query past mistakes and correct actions by keywords.
 
     Use this at the beginning of a task to fetch relevant wrong-answer notes to avoid repeating past mistakes.
+    Only returns notes for the current model (set via ODAB_MODEL env var).
     """
-    notes = db.query_notes(keywords)
+    notes = db.query_notes(keywords, target_model=CURRENT_MODEL)
     if not notes:
-        return "No relevant past mistakes found for keywords: " + ", ".join(keywords)
+        return f"No relevant past mistakes found for model '{CURRENT_MODEL}' with keywords: " + ", ".join(keywords)
 
-    result = [f"Found {len(notes)} wrong-answer notes:"]
+    result = [f"Found {len(notes)} wrong-answer notes for model '{CURRENT_MODEL}':"]
     for idx, note in enumerate(notes, 1):
         status = "Verified" if note['is_verified'] else "Draft (Not Verified)"
         result.append(
@@ -29,14 +34,15 @@ def query_notes(keywords: list[str]) -> str:
     return "\n\n".join(result)
 
 @mcp.tool()
-def record_mistake(keyword: str, error_pattern: str, solution: str, target_model: str = "all") -> str:
+def record_mistake(keyword: str, error_pattern: str, solution: str, target_model: str = "") -> str:
     """Record a new mistake or error pattern with its correct solution.
 
     Use this tool when a build error occurs, or when you receive negative feedback from the user.
-    target_model can be set to a specific model name (e.g. 'gemini-3.5-flash', 'claude-3.5-sonnet') to track model-specific mistakes.
+    target_model defaults to the current model (ODAB_MODEL env var).
     """
-    note_id = db.add_mistake(keyword, error_pattern, solution, target_model=target_model)
-    return f"Successfully recorded mistake (ID: {note_id}, Model: {target_model}). Status is set to Draft. Ask the user or CLI to verify it."
+    model = target_model or CURRENT_MODEL
+    note_id = db.add_mistake(keyword, error_pattern, solution, target_model=model)
+    return f"Successfully recorded mistake (ID: {note_id}, Model: {model}). I am '{CURRENT_MODEL}' and this note is in my notebook. Status: Draft."
 
 @mcp.tool()
 def propose_conflict_resolution(note_id_a: int, note_id_b: int, proposed_solution_c: str) -> str:
@@ -94,12 +100,14 @@ def register_skill(name: str, cmd: str, desc: str) -> str:
         return f"Failed to register skill '{name}'."
 
 @mcp.tool()
-def match_error_trace(error_trace: str, target_model: str = "all", only_verified: bool = False) -> str:
+def match_error_trace(error_trace: str, target_model: str = "", only_verified: bool = False) -> str:
     """Match a stack trace or compilation error against database regexes.
 
     Use this tool when an execution or compilation error occurs during coding to find a correction.
+    Defaults to current model's notebook.
     """
-    notes = db.match_error_trace(error_trace, target_model=target_model, only_verified=only_verified)
+    model = target_model or CURRENT_MODEL
+    notes = db.match_error_trace(error_trace, target_model=model, only_verified=only_verified)
     if not notes:
         return "No matching past error patterns found."
 
@@ -115,7 +123,7 @@ def match_error_trace(error_trace: str, target_model: str = "all", only_verified
     return "\n\n".join(result)
 
 @mcp.tool()
-def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "all") -> str:
+def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "") -> str:
     """Quick-record a mistake from plain language. This is the 'odab pull' trigger.
 
     When the user says '오답 넣어' or 'odab pull':
@@ -124,18 +132,20 @@ def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "a
     3. The keyword is auto-generated from the description.
 
     Args:
-        what_went_wrong: Plain description of the mistake (e.g. 'used LKS venv instead of local venv')
-        what_fixed_it: Plain description of the fix (e.g. 'created dedicated .venv inside project dir')
-        target_model: Which model made this mistake (e.g. 'gemini-3.5-flash', 'claude-3.5-sonnet', 'all')
+        what_went_wrong: Plain description of the mistake
+        what_fixed_it: Plain description of the fix
+        target_model: Which model made this mistake. Defaults to current model (ODAB_MODEL env var).
     """
+    model = target_model or CURRENT_MODEL
     # Auto-generate keyword from description
     clean = re.sub(r'[^\w\s]', '', what_went_wrong)
     words = [w.capitalize() for w in clean.split() if len(w) > 2][:4]
     keyword = "_".join(words) if words else "Unknown_Error"
 
-    note_id = db.add_mistake(keyword, what_went_wrong, what_fixed_it, target_model=target_model)
+    note_id = db.add_mistake(keyword, what_went_wrong, what_fixed_it, target_model=model)
     return (
-        f"✅ Recorded (ID: {note_id}, Model: {target_model})\n"
+        f"✅ Recorded (ID: {note_id})\n"
+        f"   Model: {model} (I am '{CURRENT_MODEL}')\n"
         f"   Keyword: {keyword}\n"
         f"   Mistake: {what_went_wrong}\n"
         f"   Fix: {what_fixed_it}"
@@ -185,6 +195,7 @@ def revise_last(correction: str) -> str:
 
     return (
         f"📝 Revised note (ID: {note_id})\n"
+        f"   Model: {latest.get('target_model', 'all')} (revised by '{CURRENT_MODEL}')\n"
         f"   Keyword: {keyword}\n"
         f"   Mistake: {new_mistake}\n"
         f"   Fix: {new_fix}"
@@ -207,6 +218,7 @@ def delete_last() -> str:
     db.delete_note(note_id)
     return (
         f"🗑️ Deleted note (ID: {note_id})\n"
+        f"   Model: {latest.get('target_model', 'all')} (deleted by '{CURRENT_MODEL}')\n"
         f"   Keyword: {keyword}\n"
         f"   Was: {latest['error_pattern']}"
     )
