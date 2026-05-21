@@ -206,6 +206,32 @@ class OdabNoteDB:
             cursor = conn.execute("SELECT * FROM incorrect_notes ORDER BY occurrence_count DESC")
             return [dict(row) for row in cursor.fetchall()]
 
+    def get_latest_note(self) -> Optional[Dict[str, Any]]:
+        with self._get_connection() as conn:
+            cursor = conn.execute("SELECT * FROM incorrect_notes ORDER BY id DESC LIMIT 1")
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+    def update_note(self, note_id: int, keyword: str = None, error_pattern: str = None, solution: str = None) -> bool:
+        with self._get_connection() as conn:
+            updates = []
+            params = []
+            if keyword is not None:
+                updates.append("keyword = ?")
+                params.append(keyword)
+            if error_pattern is not None:
+                updates.append("error_pattern = ?")
+                params.append(error_pattern)
+            if solution is not None:
+                updates.append("solution = ?")
+                params.append(solution)
+            if not updates:
+                return False
+            params.append(note_id)
+            cursor = conn.execute(f"UPDATE incorrect_notes SET {', '.join(updates)} WHERE id = ?", params)
+            conn.commit()
+            return cursor.rowcount > 0
+
     # --- Relations and Conflict Handling ---
     def add_relation(self, from_id: int, to_id: int, relation_type: str = 'conflict'):
         with self._get_connection() as conn:

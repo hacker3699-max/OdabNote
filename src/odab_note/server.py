@@ -141,6 +141,76 @@ def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "a
         f"   Fix: {what_fixed_it}"
     )
 
+@mcp.tool()
+def revise_last(correction: str) -> str:
+    """Revise the most recently recorded note based on user feedback.
+
+    Trigger: '오답 수정', 'fix that note', 'that's wrong, change it to...'
+
+    The user may say something like:
+      '오답 수정 파일명을 그렇게 바꾸지 말라는거야 다른거랑 맞춰서 넣어야지'
+
+    You must:
+    1. Get the latest note from the database.
+    2. Re-interpret the user's feedback to update the mistake description and/or fix.
+    3. Call this tool with the corrected content.
+    4. REPORT what changed to the user.
+
+    Args:
+        correction: The corrected content. Format as 'mistake: ... | fix: ...' or just the part to change.
+    """
+    latest = db.get_latest_note()
+    if not latest:
+        return "❌ No notes found to revise."
+
+    note_id = latest['id']
+
+    # Parse correction — if it contains 'mistake:' and 'fix:', split them
+    if '|' in correction:
+        parts = correction.split('|', 1)
+        new_mistake = parts[0].strip()
+        new_fix = parts[1].strip()
+        db.update_note(note_id, error_pattern=new_mistake, solution=new_fix)
+        # Regenerate keyword
+        clean = re.sub(r'[^\w\s]', '', new_mistake)
+        words = [w.capitalize() for w in clean.split() if len(w) > 2][:4]
+        keyword = "_".join(words) if words else latest['keyword']
+        db.update_note(note_id, keyword=keyword)
+    else:
+        # Update the solution/fix part only
+        db.update_note(note_id, solution=correction)
+        keyword = latest['keyword']
+        new_mistake = latest['error_pattern']
+        new_fix = correction
+
+    return (
+        f"📝 Revised note (ID: {note_id})\n"
+        f"   Keyword: {keyword}\n"
+        f"   Mistake: {new_mistake}\n"
+        f"   Fix: {new_fix}"
+    )
+
+@mcp.tool()
+def delete_last() -> str:
+    """Delete the most recently recorded note.
+
+    Trigger: '오답 삭제', 'delete that note', 'undo that'
+
+    You must REPORT what was deleted to the user.
+    """
+    latest = db.get_latest_note()
+    if not latest:
+        return "❌ No notes found to delete."
+
+    note_id = latest['id']
+    keyword = latest['keyword']
+    db.delete_note(note_id)
+    return (
+        f"🗑️ Deleted note (ID: {note_id})\n"
+        f"   Keyword: {keyword}\n"
+        f"   Was: {latest['error_pattern']}"
+    )
+
 def run():
     mcp.run()
 

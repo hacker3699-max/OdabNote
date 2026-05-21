@@ -50,16 +50,43 @@ When the user says any of the following:
 **You must immediately:**
 1. Analyze the recent conversation to identify what went wrong and what fixed it.
 2. Call `auto_record(what_went_wrong="...", what_fixed_it="...", target_model="your-model-name")`.
-3. Confirm to the user what was recorded.
+3. **REPORT** what you recorded to the user.
 
 **The user should NOT need to specify any details.** You already have the context.
+
+### On `오답 수정` (Revise Last Note)
+When the user says: `오답 수정`, `fix that note`, or provides correction after seeing a report:
+1. Call `revise_last(correction="user's corrected interpretation")`.
+2. **REPORT** the revised content to the user.
+
+### On `오답 삭제` (Delete Last Note)
+When the user says: `오답 삭제`, `delete that note`, `undo that`:
+1. Call `delete_last()`.
+2. **REPORT** what was deleted to the user.
 
 ### On Command Failure (exit code ≠ 0)
 When any shell command you execute fails:
 1. Capture the stderr/traceback.
 2. Call `match_error_trace(error_trace=stderr_content)` to check for a known fix.
-3. If a match is found, apply the fix immediately.
-4. If no match and you solve it yourself, call `auto_record()` to save it for next time.
+3. If a match is found, apply the fix immediately and **REPORT** what you found.
+4. If no match and you solve it yourself, call `auto_record()` and **REPORT**.
+
+---
+
+## Mandatory Reporting Rule
+
+> **After EVERY odab action, you MUST report to the user what happened.**
+> Do not silently record, revise, or delete. Always show the result.
+
+---
+
+## 4. Trigger Quick Reference
+
+| User says | Agent action | MCP tool |
+|-----------|-------------|----------|
+| `오답 넣어` / `odab pull` | Record last mistake | `auto_record()` |
+| `오답 수정` / `fix that note` | Revise last note | `revise_last()` |
+| `오답 삭제` / `delete that note` | Delete last note | `delete_last()` |
 
 ---
 
