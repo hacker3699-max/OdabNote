@@ -31,10 +31,15 @@ AI coding agents (Claude Code, Codex, Cursor, Gemini, etc.) repeatedly make the 
 ### Installation
 
 ```bash
+pip install odab-note
+```
+
+Or install from source:
+
+```bash
 git clone https://github.com/hacker3699-max/OdabNote.git
 cd OdabNote
-python3 -m venv .venv
-.venv/bin/pip install -e .
+pip install -e .
 ```
 
 ### Verify Installation
@@ -197,6 +202,8 @@ odab decay --days 30
 
 ## MCP Server Integration
 
+After `pip install odab-note`, add to your MCP config:
+
 ### For Gemini (Antigravity)
 
 Add to `~/.gemini/antigravity/mcp_config.json`:
@@ -204,11 +211,7 @@ Add to `~/.gemini/antigravity/mcp_config.json`:
 ```json
 {
   "odab-note": {
-    "command": "/path/to/OdabNote/.venv/bin/python",
-    "args": ["-m", "odab_note.server"],
-    "env": {
-      "PYTHONPATH": "/path/to/OdabNote/src"
-    }
+    "command": "odab-note"
   }
 }
 ```
@@ -221,11 +224,7 @@ Add to your MCP settings (e.g. `.cursor/mcp.json` or `claude_desktop_config.json
 {
   "mcpServers": {
     "odab-note": {
-      "command": "/path/to/OdabNote/.venv/bin/python",
-      "args": ["-m", "odab_note.server"],
-      "env": {
-        "PYTHONPATH": "/path/to/OdabNote/src"
-      }
+      "command": "odab-note"
     }
   }
 }
@@ -233,14 +232,17 @@ Add to your MCP settings (e.g. `.cursor/mcp.json` or `claude_desktop_config.json
 
 ### Available MCP Tools
 
-| Tool | Description |
-|------|-------------|
-| `query_notes(keywords)` | Search past mistakes by keyword before starting work |
-| `match_error_trace(error_trace, target_model)` | Match a stack trace against the database to find a known fix |
-| `record_mistake(keyword, error_pattern, solution, target_model)` | Record a new mistake with its solution |
-| `propose_conflict_resolution(note_id_a, note_id_b, proposed_solution_c)` | Propose resolution for conflicting notes |
-| `resolve_conflict_merge(keep_id, delete_id, merged_solution, merged_keyword)` | Execute a conflict merge |
-| `register_skill(name, cmd, desc)` | Save a verified workflow command for reuse |
+| Tool | Trigger | Description |
+|------|---------|-------------|
+| `auto_record` | `오답 넣어` / `odab pull` | Quick-record a mistake from plain language |
+| `revise_last` | `오답 수정` / `odab fix` | Revise the most recent note |
+| `delete_last` | `오답 삭제` / `odab del` | Delete the most recent note |
+| `query_notes` | — | Search past mistakes by keyword |
+| `match_error_trace` | — | Match a stack trace to find a known fix |
+| `record_mistake` | — | Record with full control (keyword, regex, solution) |
+| `propose_conflict_resolution` | — | Propose resolution for conflicting notes |
+| `resolve_conflict_merge` | — | Execute a conflict merge |
+| `register_skill` | — | Save a verified workflow command for reuse |
 
 ---
 
