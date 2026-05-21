@@ -42,10 +42,7 @@ If you solve an error not yet in the database, record it so future runs won't re
 ## 3. Triggers — When to Act Automatically
 
 ### On `odab pull` (User-Initiated Quick Record)
-When the user says any of the following:
-- `오답 넣어`
-- `odab pull`
-- `record that mistake`
+When the user says: `오답 넣어` or `odab pull`:
 
 **You must immediately:**
 1. Analyze the recent conversation to identify what went wrong and what fixed it.
@@ -54,13 +51,13 @@ When the user says any of the following:
 
 **The user should NOT need to specify any details.** You already have the context.
 
-### On `오답 수정` (Revise Last Note)
-When the user says: `오답 수정`, `fix that note`, or provides correction after seeing a report:
+### On `오답 수정` / `odab fix` (Revise Last Note)
+When the user says `오답 수정` or `odab fix` followed by feedback:
 1. Call `revise_last(correction="user's corrected interpretation")`.
 2. **REPORT** the revised content to the user.
 
-### On `오답 삭제` (Delete Last Note)
-When the user says: `오답 삭제`, `delete that note`, `undo that`:
+### On `오답 삭제` / `odab del` (Delete Last Note)
+When the user says `오답 삭제` or `odab del`:
 1. Call `delete_last()`.
 2. **REPORT** what was deleted to the user.
 
@@ -85,8 +82,8 @@ When any shell command you execute fails:
 | User says | Agent action | MCP tool |
 |-----------|-------------|----------|
 | `오답 넣어` / `odab pull` | Record last mistake | `auto_record()` |
-| `오답 수정` / `fix that note` | Revise last note | `revise_last()` |
-| `오답 삭제` / `delete that note` | Delete last note | `delete_last()` |
+| `오답 수정` / `odab fix` | Revise last note | `revise_last()` |
+| `오답 삭제` / `odab del` | Delete last note | `delete_last()` |
 
 ---
 

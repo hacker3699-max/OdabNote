@@ -118,7 +118,7 @@ def match_error_trace(error_trace: str, target_model: str = "all", only_verified
 def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "all") -> str:
     """Quick-record a mistake from plain language. This is the 'odab pull' trigger.
 
-    When the user says any of: '오답 넣어', 'odab pull', 'record that mistake', or similar:
+    When the user says '오답 넣어' or 'odab pull':
     1. Analyze your recent conversation to identify the error and the fix.
     2. Call this tool with a plain-language description. No regex needed.
     3. The keyword is auto-generated from the description.
@@ -145,7 +145,7 @@ def auto_record(what_went_wrong: str, what_fixed_it: str, target_model: str = "a
 def revise_last(correction: str) -> str:
     """Revise the most recently recorded note based on user feedback.
 
-    Trigger: '오답 수정', 'fix that note', 'that's wrong, change it to...'
+    Trigger: '오답 수정' or 'odab fix'
 
     The user may say something like:
       '오답 수정 파일명을 그렇게 바꾸지 말라는거야 다른거랑 맞춰서 넣어야지'
@@ -194,7 +194,7 @@ def revise_last(correction: str) -> str:
 def delete_last() -> str:
     """Delete the most recently recorded note.
 
-    Trigger: '오답 삭제', 'delete that note', 'undo that'
+    Trigger: '오답 삭제' or 'odab del'
 
     You must REPORT what was deleted to the user.
     """

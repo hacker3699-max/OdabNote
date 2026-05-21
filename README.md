@@ -110,7 +110,7 @@ Agent: 🗑️ Deleted note (ID: 13)
 | `오답 수정` + feedback | Fix the note |
 | `오답 삭제` | Delete the note |
 
-> English alternatives: `odab pull`, `fix that note`, `delete that note`
+> English: `odab pull`, `odab fix`, `odab del`
 
 ---
 
