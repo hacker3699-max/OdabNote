@@ -17,5 +17,15 @@ async def main():
     res2 = match_error_trace(test_trace, target_model="claude-3.5-sonnet")
     print(f"Result:\n{res2}\n")
 
+    print("🔍 [TEST 3] Match ZeroDivisionError Trace...")
+    zero_trace = """
+Traceback (most recent call last):
+  File "buggy_script.py", line 6, in <module>
+    print(calculate_ratio(10, 0))
+ZeroDivisionError: division by zero
+"""
+    res3 = match_error_trace(zero_trace, target_model="all")
+    print(f"Result:\n{res3}\n")
+
 if __name__ == "__main__":
     asyncio.run(main())
