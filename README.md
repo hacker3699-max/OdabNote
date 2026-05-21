@@ -15,16 +15,37 @@ In Korea, students keep a notebook called **오답노트** (*odab-note*) — a "
 
 **We built the same thing for AI agents.**
 
-Working daily with Claude, Gemini, Codex, and other models, a pattern became obvious: **AI agents forget.** They make the same mistakes across sessions — using wrong paths, breaking naming conventions, ignoring project rules. Every new conversation starts from zero.
+### The Problem We Lived
 
-We tried the usual fixes:
-- **System prompts and harnesses** — they work, but agents hit context limits and forget rules buried 50k tokens ago
-- **Gate checks and linting** — they catch syntax, not logic errors or project-specific anti-patterns
-- **Documentation** — agents skim it, miss details, and repeat mistakes anyway
+We don't just use AI agents — we run an entire engineering organization through them. While building [MacBaram](https://github.com/hacker3699-max/MacBaram), a production app managed entirely by AI agents, we pushed every model to its limits. Claude for architecture reviews. Gemini for deep code audits. Codex for execution. Local models for bulk tasks. Multiple models, multiple projects, hundreds of sessions per week.
 
-None of these solutions *learn*. They're static. So we asked: **what if agents could build their own wrong-answer notebook?**
+And we watched them all make the **same mistakes**, over and over.
 
-OdabNote is that notebook — a local MCP server that captures error patterns, stores verified fixes, and matches future errors against its database. It acts as an **immune system** for AI coding agents. Once a mistake is recorded, no agent repeats it.
+An agent renames a directory but forgets to update the imports. Another fixes a bug on the surface but leaves the root cause untouched. A third ignores a naming convention that was clearly documented. Every new session starts from zero. Every lesson learned is lost the moment the context window closes.
+
+### What We Tried First
+
+We went deep into **harness engineering** — writing rules, constraints, system prompts, gate checks. We built layered governance documents, constitutional guidelines, and behavioral harnesses for every model.
+
+It worked. Until it didn't.
+
+The rules grew. The context windows didn't. At 50k tokens, agents start forgetting the rules you wrote at the top. At 100k, they hallucinate compliance. Harnesses are static — they tell agents what to do, but they can't *learn* from what went wrong. Linters catch syntax errors, not judgment errors. Documentation gets skimmed and ignored.
+
+**We realized: constraining agents isn't enough. You have to teach them.**
+
+### The Breakthrough
+
+The insight was simple: **mistakes are data.** Every time an agent fails and a human corrects it, that's a training signal being thrown away. What if we captured it? What if every mistake became a vaccine — recorded once, effective forever, across every future session?
+
+That's OdabNote. A local MCP server that acts as an **immune system** for AI coding agents. It captures error patterns, stores verified fixes, and automatically matches future errors against its database. Once a mistake is recorded, no agent — on any model, in any session — repeats it.
+
+### Beyond Harness Engineering
+
+**Harness engineering** was the first generation — static rules to constrain AI agents.
+
+**Odab engineering** is the next — collective intelligence that teaches agents what *not* to do. Not through rules they might forget, but through a living database of verified failures and fixes that grows smarter with every session.
+
+We believe this is how AI agents should evolve: not by writing longer system prompts, but by building immune systems that learn.
 
 ---
 
