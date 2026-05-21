@@ -9,15 +9,22 @@ OdabNote is a local MCP (Model Context Protocol) server that captures error patt
 
 ---
 
-## Why OdabNote?
+## The Story Behind OdabNote
 
-AI coding agents (Claude Code, Codex, Cursor, Gemini, etc.) repeatedly make the same mistakes across sessions. They forget what went wrong last time. OdabNote solves this by:
+In Korea, students keep a notebook called **오답노트** (*odab-note*) — a "wrong-answer notebook." Every time they get a question wrong on an exam, they write it down: what they got wrong, why it was wrong, and the correct answer. Over time, this notebook becomes their most powerful study tool. They stop making the same mistakes.
 
-1. **Recording** error patterns with their verified fixes
-2. **Matching** new errors against the database in real-time
-3. **Preventing** the same mistake from happening again
-4. **Tracking** which AI models make which mistakes (model-specific blacklists)
-5. **Decaying** outdated patterns so the knowledge stays fresh
+**We built the same thing for AI agents.**
+
+Working daily with Claude, Gemini, Codex, and other models, a pattern became obvious: **AI agents forget.** They make the same mistakes across sessions — using wrong paths, breaking naming conventions, ignoring project rules. Every new conversation starts from zero.
+
+We tried the usual fixes:
+- **System prompts and harnesses** — they work, but agents hit context limits and forget rules buried 50k tokens ago
+- **Gate checks and linting** — they catch syntax, not logic errors or project-specific anti-patterns
+- **Documentation** — agents skim it, miss details, and repeat mistakes anyway
+
+None of these solutions *learn*. They're static. So we asked: **what if agents could build their own wrong-answer notebook?**
+
+OdabNote is that notebook — a local MCP server that captures error patterns, stores verified fixes, and matches future errors against its database. It acts as an **immune system** for AI coding agents. Once a mistake is recorded, no agent repeats it.
 
 ---
 
