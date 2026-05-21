@@ -63,7 +63,60 @@ Commands:
 
 ## Usage Guide
 
-### 1. Record a Mistake
+### How It Works (Natural Language)
+
+You don't need to type CLI commands. Just talk to your AI agent in natural language.
+
+**Step 1 — Agent makes a mistake. You say: `오답 넣어`**
+
+> You asked the agent to modify `config.yaml`, but it created a new `config_new.yaml` instead.
+
+```
+You:  왜 새로 만들어? 기존 파일 수정하라고 했잖아. 오답 넣어
+
+Agent: ✅ Recorded (ID: 13, Model: claude-opus-4.6)
+         Keyword: Created_New_File_Instead_Modifying
+         Mistake: User asked to modify existing file but agent created a new file instead
+         Fix: When user says 'modify', always edit the existing file in place.
+              Never create a new file unless explicitly asked.
+```
+
+**Step 2 — Not happy with the note? Say: `오답 수정`**
+
+```
+You:  오답 수정 그게 아니라 설정 파일 건드릴 때는 백업부터 하라는 뜻이야
+
+Agent: 📝 Revised note (ID: 13)
+         Keyword: Config_File_Backup_First
+         Mistake: Modified config file without creating a backup first
+         Fix: Always create a backup copy before modifying any config file
+```
+
+**Step 3 — Want to remove it entirely? Say: `오답 삭제`**
+
+```
+You:  오답 삭제
+
+Agent: 🗑️ Deleted note (ID: 13)
+         Keyword: Config_File_Backup_First
+         Was: Modified config file without creating a backup first
+```
+
+**That's it.** Three phrases to remember:
+
+| Phrase | What it does |
+|--------|-------------|
+| `오답 넣어` | Record the last mistake |
+| `오답 수정` + feedback | Fix the note |
+| `오답 삭제` | Delete the note |
+
+> English alternatives: `odab pull`, `fix that note`, `delete that note`
+
+---
+
+### CLI Reference
+
+#### 1. Record a Mistake
 
 When you encounter an error and fix it, record it:
 
