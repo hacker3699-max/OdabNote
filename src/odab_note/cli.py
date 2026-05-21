@@ -189,5 +189,67 @@ def run_server():
     click.echo("Starting OdabNote MCP Server...")
     mcp.run()
 
+@main.command()
+@click.option('--share', type=click.Choice(['on', 'off']), help='Enable or disable community sharing.')
+@click.option('--supabase-url', help='Supabase project URL.')
+@click.option('--supabase-key', help='Supabase anon key.')
+@click.option('--show', is_flag=True, help='Show current config.')
+def config(share, supabase_url, supabase_key, show):
+    """Configure OdabNote settings (community sharing, etc.)."""
+    from odab_note.sharing import load_config, save_config, enable_sharing, disable_sharing
+
+    if show:
+        cfg = load_config()
+        click.echo(f"  Share enabled: {'✅ on' if cfg['share_enabled'] else '❌ off'}")
+        click.echo(f"  Supabase URL:  {cfg['supabase_url'] or '(not set)'}")
+        click.echo(f"  Supabase key:  {'****' + cfg['supabase_key'][-8:] if cfg['supabase_key'] else '(not set)'}")
+        click.echo(f"  Anonymous ID:  {cfg['anonymous_id'] or '(not set)'}")
+        return
+
+    if share == 'on':
+        cfg = load_config()
+        url = supabase_url or cfg.get('supabase_url', '')
+        key = supabase_key or cfg.get('supabase_key', '')
+        if not url or not key:
+            click.echo("❌ Supabase URL and key are required to enable sharing.")
+            click.echo("   odab config --share on --supabase-url https://xxx.supabase.co --supabase-key eyJ...")
+            return
+        enable_sharing(url, key)
+        click.echo("✅ Community sharing enabled. All new mistakes will be auto-shared (anonymized).")
+    elif share == 'off':
+        disable_sharing()
+        click.echo("❌ Community sharing disabled. No data will be sent.")
+    else:
+        click.echo("Use --share on/off or --show to view current config.")
+
+@main.command()
+@click.option('-m', '--model', default='all', help='Filter by model name.')
+def sync(model):
+    """Pull community-shared mistakes into your local database."""
+    from odab_note.sharing import pull_community
+
+    click.echo("🔄 Pulling community mistakes...")
+    notes = pull_community(target_model=model)
+
+    if not notes:
+        click.echo("   No community notes found (or sharing not configured).")
+        return
+
+    imported = 0
+    for note in notes:
+        try:
+            db.add_mistake(
+                keyword=f"community_{note['keyword']}",
+                error_pattern=note['error_pattern'],
+                solution=note['solution'],
+                target_model=note.get('target_model', 'all'),
+                is_verified=False
+            )
+            imported += 1
+        except Exception:
+            pass
+
+    click.echo(f"✅ Imported {imported} community mistakes into your local database.")
+
 if __name__ == "__main__":
     main()

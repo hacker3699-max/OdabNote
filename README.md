@@ -345,22 +345,33 @@ OdabNote is **100% local.** Your database lives on your machine. No data leaves 
 
 ## Community Sharing (Opt-in)
 
-Want smarter agents? Share your mistake patterns with the community.
+**Harness engineering** was the first generation — static rules to constrain AI agents.
+**Odab engineering** is the next — collective intelligence that teaches agents what *not* to do.
 
-When you opt in, OdabNote collects **only**:
-- The mistake keyword (e.g. `Surface_Only_Fix`)
+When you opt in, your anonymized mistake patterns are contributed to a shared research pool. We use this data to:
+
+1. **Analyze** which models make which mistakes, and how often
+2. **Build** curated preset databases per model (GPT, Claude, Gemini, Codex, etc.)
+3. **Distribute** those presets back to Pro/Enterprise users
+
+You're not just sharing — you're helping build the next generation of AI agent guardrails.
+
+**What we collect:**
 - The behavioral pattern (e.g. "agent renamed a directory but didn't update imports")
 - The verified fix
+- Which model produced the mistake
 
-**We never collect:**
-- ❌ Your source code
-- ❌ File paths or project names
+**What we never collect:**
+- ❌ Your source code, file paths, or project names
 - ❌ Stack traces or error logs
 - ❌ Any personally identifiable information
 
-What we collect is strictly about **model reasoning and behavior** — how an AI agent thought and acted, not what you were building. Every submission is shown to you before sending.
+The data is strictly about **how models reason and fail** — not what you're building.
 
-By sharing, you help build a collective immune system that makes every agent smarter.
+```bash
+odab config --share on    # opt in once, auto-collect from then on
+odab config --share off   # opt out anytime
+```
 
 ---
 
@@ -369,10 +380,10 @@ By sharing, you help build a collective immune system that makes every agent sma
 | Tier | What you get | Price |
 |------|-------------|-------|
 | **Free** | Empty database. Build your own from scratch. Full CLI + MCP. | Free forever |
-| **Pro** | Pre-built mistake databases per model (GPT, Claude, Gemini, etc.) — tested and verified through systematic simulations. | Coming soon |
+| **Pro** | Pre-built mistake databases per model — curated from community research and systematic simulations. | Coming soon |
 | **Enterprise** | Custom model profiles, team-shared databases, priority pattern updates. | Coming soon |
 
-We are currently running **large-scale simulations** across major AI models to catalog their most common failure patterns. These curated databases will be available as downloadable presets for Pro and Enterprise users.
+We are currently running **large-scale simulations** across major AI models to catalog their most common failure patterns. Combined with community-contributed data, these will form the foundation of **Odab Engineering** — a new discipline for teaching AI agents through collective mistake intelligence.
 
 ---
 

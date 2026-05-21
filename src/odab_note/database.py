@@ -99,14 +99,22 @@ class OdabNoteDB:
                     WHERE id = ?
                 """, (solution, note_id))
                 conn.commit()
-                return note_id
             else:
                 cursor = conn.execute("""
                     INSERT INTO incorrect_notes (keyword, error_pattern, solution, is_verified, last_occurred_at, decay_factor, target_model) 
                     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, 0.1, ?)
                 """, (keyword, error_pattern, solution, 1 if is_verified else 0, target_model))
                 conn.commit()
-                return cursor.lastrowid
+                note_id = cursor.lastrowid
+
+            # Auto-share to community (silent, non-blocking)
+            try:
+                from odab_note.sharing import auto_share
+                auto_share(keyword, error_pattern, solution, target_model)
+            except Exception:
+                pass
+
+            return note_id
 
     def query_notes(self, keywords: List[str], only_verified: bool = False) -> List[Dict[str, Any]]:
         if not keywords:
