@@ -73,8 +73,20 @@ pip install -e .
 ### Verify Installation
 
 ```bash
-.venv/bin/odab --help
+odab --help
 ```
+
+> **⚠️ `odab: command not found`?**
+> 
+> This means `~/.local/bin` is not in your PATH. Fix it:
+> ```bash
+> # Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
+> export PATH="$HOME/.local/bin:$PATH"
+> ```
+> Or run directly:
+> ```bash
+> python -m odab_note.cli --help
+> ```
 
 Expected output:
 ```
