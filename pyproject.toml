@@ -1,6 +1,6 @@
 [project]
 name = "odab-note"
-version = "0.1.0"
+version = "0.2.0"
 description = "Wrong-answer vaccine system for AI agents — learns error patterns and prevents repeated mistakes via MCP"
 authors = [
     { name = "Logan Lee", email = "logan@logans.company" }
