@@ -1,5 +1,8 @@
 # OdabNote — Wrong-Answer Vaccine System for AI Agents
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-♥-ea4aaa?style=for-the-badge&logo=github-sponsors)](https://github.com/sponsors/hacker3699-max)
+[![License](https://img.shields.io/badge/License-All_Rights_Reserved-blue?style=for-the-badge)](LICENSE)
+
 > **Teach AI agents to never repeat the same coding mistake twice.**
 
 OdabNote is a local MCP (Model Context Protocol) server that captures error patterns, stores verified solutions, and automatically matches future errors against its database — acting as an immune system for AI coding agents.

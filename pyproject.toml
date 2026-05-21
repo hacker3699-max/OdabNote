@@ -14,7 +14,7 @@ requires-python = ">=3.10"
 
 [project.scripts]
 odab = "odab_note.cli:main"
-odab-note = "odab_note.cli:main"
+odab-note = "odab_note.server:run"
 
 [build-system]
 requires = ["hatchling"]
