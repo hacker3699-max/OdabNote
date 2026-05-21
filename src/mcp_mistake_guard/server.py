@@ -91,6 +91,27 @@ def register_skill(name: str, cmd: str, desc: str) -> str:
     else:
         return f"Failed to register skill '{name}'."
 
+@mcp.tool()
+def match_error_trace(error_trace: str, target_model: str = "all", only_verified: bool = False) -> str:
+    """Match a stack trace or compilation error against database regexes.
+
+    Use this tool when an execution or compilation error occurs during coding to find a correction.
+    """
+    notes = db.match_error_trace(error_trace, target_model=target_model, only_verified=only_verified)
+    if not notes:
+        return "No matching past error patterns found."
+
+    result = [f"Found {len(notes)} matching wrong-answer notes:"]
+    for idx, note in enumerate(notes, 1):
+        status = "Verified" if note['is_verified'] else "Draft"
+        result.append(
+            f"{idx}. [{status}] (Weight: {note['occurrence_count']}, Model: {note.get('target_model', 'all')})\n"
+            f"   - Target Keyword: {note['keyword']}\n"
+            f"   - Match Pattern: {note['error_pattern']}\n"
+            f"   - Correct Solution: {note['solution']}"
+        )
+    return "\n\n".join(result)
+
 def run():
     mcp.run()
 
